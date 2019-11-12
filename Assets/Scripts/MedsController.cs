@@ -148,6 +148,7 @@ namespace Assets.Scripts {
                         continue;
                     }
                     var med = Instantiate(prefabMeds);  // создание копий префаба таблетки на поле
+                    med.parentRT = parentRectTransform;
                     CountMeds();
                     Get_random_TypeColor(med);
                     med.Setup(GetColorByTypeColors(med.colorOfMed));
