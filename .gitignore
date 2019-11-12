@@ -1,0 +1,11 @@
+*.dtbcache
+*.suo
+*.lock
+.vs/
+*.csproj
+Library/
+Packages/
+Logs/
+*.cache
+obj/
+*.sln
