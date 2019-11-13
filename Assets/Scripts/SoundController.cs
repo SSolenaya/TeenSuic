@@ -18,6 +18,7 @@ namespace Assets.Scripts {
         public static event SoundSwitch OnSwitchSound; // событие
 
        public void Start () {
+           Debug.Log(Inst.soundState);
             backgroundMusic.clip = backgroundClip;
             backgroundMusic.Play();
             backgroundMusic.loop = true;
@@ -25,7 +26,6 @@ namespace Assets.Scripts {
             backgroundMusic.mute = !soundState;
             effectsAudioSource.mute = !soundState;
             EventOnSoundSwitch(soundState);
-            Meds.OnMedsEvent += PlaySoundForClick;
        }
 
         public void PlaySoundForClick () {
@@ -53,8 +53,5 @@ namespace Assets.Scripts {
                 Debug.Log("У делегата нет подписчиков");
             }
         }
-
-    }
-
-
+     }
 }

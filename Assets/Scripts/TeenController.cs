@@ -6,36 +6,35 @@ using Seka;
 namespace Assets.Scripts {
     public class TeenController: Singleton<TeenController> {
 
-        private int maxHP = 100; // максимальный уровень жизни - конец игры
-
+        private int maxHP = GP.lives; // максимальный уровень жизни - конец игры
         private int minHP = 0; // минимальный уровень жизни - конец игры
         public int valueFromMeds; // текущее количество набранных из таблеток очков
         public int hp = 50; // количество жизней для отображения
-
         public Text textHP; // текстовое отображение текущего количества жизни
-
         public Image imgLifeBar; // изображение лайф бара
-
         private float fA = 0; // переменная для рассчета заполнения бара жизни
-
         public Image face;
         public List<Sprite> boyFace = new List<Sprite>(4);
+
+        public delegate void EndGame (string msg); // делегат
+
+        public static event EndGame OnEndGame; // событие  
 
         public void Start () {
             textHP.text = "HP:" + hp;
             imgLifeBar.color = new Color(0f, 0.43f, 0.07f, 0.86f);
             imgLifeBar.fillAmount = 0.5f;
+            MedsController.OnMCmedAction += EatMeds;
         }
 
         public void EatMeds (Meds someMed) { // расчет текущего количества очков и их отображение
-            CheckEndGame();
             valueFromMeds += someMed.GetValueOfMed();
-            //hp = maxHP / 2 + valueFromMeds;
             hp = Mathf.Clamp(maxHP / 2 + valueFromMeds, 0, 100);
             textHP.text = "HP:" + hp;
             BoyFace(hp);
             fA = (float)valueFromMeds / maxHP;
             imgLifeBar.fillAmount = 0.5f + fA;
+            CheckEndGame();
         }
 
         public void BoyFace (int hp) {
@@ -44,12 +43,9 @@ namespace Assets.Scripts {
         }
 
         public void CheckEndGame () {
-            if((hp <= minHP) || (hp >= maxHP) || (MedsController.Inst.currentQuantMeds >= GP.totalamountMeds)) {
-                string text = hp <= minHP ? "You die and win!" : "Game over";
-                StartCoroutine(MainLogic.Inst.IETextEndGame(text));
-
-                MedsController.Inst.parentRectTransform.gameObject.SetActive(false);
-                MedsController.Inst.StopGeneration();
+            if((hp <= minHP) || (hp >= maxHP) /*|| (MedsController.Inst.currentQuantMeds >= GP.totalAmountMeds)*/) {
+                string textMsg = hp <= minHP ? "You die and win!" : "Game over";
+                OnEndGame?.Invoke(textMsg);
             }
         }
 

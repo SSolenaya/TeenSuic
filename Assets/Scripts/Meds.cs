@@ -13,14 +13,10 @@ public class Meds: MonoBehaviour, IPointerDownHandler {
     public Sprite pillThree;
     public int value;
     public RectTransform parentRT;
-
     private int delta_HP = 3;
     public TypeColors colorOfMed;
     public float speedRotation;
-
-    public delegate void MedsDelegate ();
-
-    public static event MedsDelegate OnMedsEvent;
+    public MedsController medsController;
 
     public void Start() {
         speedRotation = Random.Range(20, 50) * (Random.value > 0.5f ? 1 : -1);
@@ -34,7 +30,6 @@ public class Meds: MonoBehaviour, IPointerDownHandler {
            || (transform.localPosition.x < parentRT.rect.width * (-0.5f))) {
             Destroy(gameObject); // удаление объекта при выходе за рамки экрана
         }
-
         transform.localEulerAngles += new Vector3(0, 0, Time.deltaTime * speedRotation);
     }
 
@@ -43,8 +38,8 @@ public class Meds: MonoBehaviour, IPointerDownHandler {
     }
 
     public void EventOnClick () {
-        OnMedsEvent?.Invoke();
-        TeenController.Inst.EatMeds(this);
+        medsController.ActionFromMed(this);
+        SoundController.Inst.PlaySoundForClick();;
         Destroy(gameObject); // удаление текущего объекта по клику
     }
 

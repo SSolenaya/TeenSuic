@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Seka;
+using TMPro.EditorUtilities;
 
 namespace Assets.Scripts {
 
@@ -16,16 +17,17 @@ namespace Assets.Scripts {
         public Button soundBtn;
         public Sprite soundOff;
         public Sprite soundOn;
+        private Coroutine _coro;
 
         private void Awake() {
             endGameModalInfo.SetActive(false);
+            TeenController.OnEndGame += EndGame;
+            MedsController.OnMCEndGame += EndGame;
         }
 
         public void Start() {
             SoundController.OnSwitchSound += ChangeMuteBtnImgGame;
-
-            MedsController.Inst.StartGenerationFromController();
-
+            
             soundBtn.onClick.RemoveAllListeners();
             soundBtn.onClick.AddListener(() => // что происходит при нажатии кнопки Sound
             {
@@ -54,7 +56,18 @@ namespace Assets.Scripts {
             soundBtn.image.sprite = var ? soundOn : soundOff;
         }
 
-        public IEnumerator IETextEndGame(string textForModalInfo) {
+        public void TextOnEndGame(string textForModalInfo) {
+            StopCoro(_coro);
+            _coro = StartCoroutine(IETextEndGame(textForModalInfo));
+        }
+
+        private void StopCoro(Coroutine corou) {
+            if (corou == null) return;
+            StopCoroutine(corou);
+            corou = null;
+        }
+
+        private IEnumerator IETextEndGame(string textForModalInfo) {
             endGameText.text = textForModalInfo;
             endGameModalInfo.SetActive(true);
             SoundController.Inst.PlaySoundForGameOver();
@@ -62,6 +75,10 @@ namespace Assets.Scripts {
             endGameModalInfo.SetActive(false);
             SceneManager.LoadScene(GP.nameSceneMainMenu); // start screen
         }
+
+        public void EndGame(string messageOnGameEnd) {
+            TextOnEndGame(messageOnGameEnd);
+            }
 
         public void OnDestroy() {
             SoundController.OnSwitchSound -= ChangeMuteBtnImgGame;

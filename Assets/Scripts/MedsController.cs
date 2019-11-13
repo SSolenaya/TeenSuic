@@ -1,8 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Seka;
+using Random = UnityEngine.Random;
 
 namespace Assets.Scripts {
     public enum TypeColors {
@@ -13,47 +15,48 @@ namespace Assets.Scripts {
         c5
     }
 
-    public class MedsController: Singleton<MedsController> {
+    public class MedsController: MonoBehaviour {
 
         public Meds prefabMeds; // ссылка на префаб таблетки
         public Text counterText;
-
         public List<Meds> currentMeds = new List<Meds>();
         public RectTransform parentRectTransform; // ссылка на родителя таблетки
-
-        private int quantityMeds = GP.totalamountMeds; // количество таблеток
+        private int quantityMeds = GP.totalAmountMeds; // количество таблеток
         public int portionOfMeds = GP.portionOfMeds; // порция таблеток, выходящая на экран
         public int numMeds;// переменная для отображения обратного счетчика таблеток
         private float timeBetweenPortions = 2f; // время между появлением порций
         public float tempTime;
         public int currentQuantMeds; // переменная для счетчика таблеток
+        private int value1;
+        private int value2;
+        private int value3;
+        private int value4;
+        private int value5;
+        private Color color1;
+        private Color color2;
+        private Color color3;
+        private Color color4;
+        private Color color5;
+        private Coroutine coroGenerationMeds;
 
-        public int value1;
-        public int value2;
-        public int value3;
-        public int value4;
-        public int value5;
 
-        public Color color1;
-        public Color color2;
-        public Color color3;
-        public Color color4;
-        public Color color5;
+        public delegate void MCEndGame (string msg); // делегат
 
-        public Coroutine coroGenerationMeds;
+        public static event MCEndGame OnMCEndGame; // событие
+
+        public delegate void MCmedAction (Meds med); // делегат
+
+        public static event MCmedAction OnMCmedAction; // событие
 
         void Awake () {
             SetValueForType();
             numMeds = quantityMeds;
         }
 
-        void Start() {
+        void Start () {
             counterText.text = numMeds + "/" + quantityMeds;
+            StartGenerationFromController();
         }
-
-        /*public void Reset() {
-            numMeds = quantityMeds;
-        }*/
 
         public void SetValueForType () {
 
@@ -87,9 +90,9 @@ namespace Assets.Scripts {
                     return color4;
                 case TypeColors.c5:
                     return color5;
+                default:
+                    return color1;
             }
-
-            return color1;
         }
 
         public int GetValueByTypeColors (TypeColors tc) {
@@ -104,15 +107,16 @@ namespace Assets.Scripts {
                     return value4;
                 case TypeColors.c5:
                     return value5;
+                default:
+                    return value1;
             }
-
-            return value1;
         }
 
         public void StopGeneration () {
             if(coroGenerationMeds != null) {
                 StopCoroutine(coroGenerationMeds);
                 DeleteCurrentMeds();
+                parentRectTransform.gameObject.SetActive(false);
             }
             coroGenerationMeds = null;
         }
@@ -133,22 +137,23 @@ namespace Assets.Scripts {
             coroGenerationMeds = StartCoroutine(IEnumGenerationMeds());
         }
 
-        public void CountMeds() {
-            currentQuantMeds ++; // счетчик вышедших на сцену таблеток
+        public void CountMeds () {
+            currentQuantMeds++; // счетчик вышедших на сцену таблеток
             numMeds = quantityMeds - currentQuantMeds;
             counterText.text = numMeds + "/" + quantityMeds;
         }
 
         public IEnumerator IEnumGenerationMeds () {// корутин для запуска порций таблеток, чтобы между ними была пауза (появление по очереди)
             while(true) {
-                TeenController.Inst.CheckEndGame();
+                CheckEndGame();
                 var temp = Random.Range(1, portionOfMeds);
                 for(int i = 1; i <= temp; i++) {
-                    if (currentMeds.Count >= GP.totalamountMeds) {
+                    if(currentMeds.Count >= GP.totalAmountMeds) {
                         continue;
                     }
                     var med = Instantiate(prefabMeds);  // создание копий префаба таблетки на поле
                     med.parentRT = parentRectTransform;
+                    med.medsController = this;
                     CountMeds();
                     Get_random_TypeColor(med);
                     med.Setup(GetColorByTypeColors(med.colorOfMed));
@@ -162,7 +167,6 @@ namespace Assets.Scripts {
 
                     currentMeds.Add(med); // запись таблетки в список
                 }
-                TeenController.Inst.CheckEndGame();
                 tempTime = Random.Range(1, timeBetweenPortions);
                 yield return new WaitForSeconds(tempTime);
             }
@@ -173,10 +177,22 @@ namespace Assets.Scripts {
             float heightOfField = parent.rect.height; // узнать высоту родителя
 
             var x = Random.Range(-widthOfField / 2 + (i - 1) * (widthOfField / temp), -widthOfField / 2 + i * (widthOfField / temp));
-            var y = Random.Range(heightOfField /2, -150+heightOfField /2);
+            var y = Random.Range(heightOfField / 2, -150 + heightOfField / 2);
             var z = 0;
             var v = new Vector3(x, y, z);
             return v;
+        }
+
+        public void CheckEndGame () {
+
+            if(currentQuantMeds >= GP.totalAmountMeds) {
+                OnMCEndGame?.Invoke("Game Over");
+                StopGeneration();
+            }
+        }
+
+        public void ActionFromMed(Meds med) {
+            OnMCmedAction?.Invoke(med);
         }
     }
 }
