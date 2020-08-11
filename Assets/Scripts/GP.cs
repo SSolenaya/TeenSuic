@@ -4,7 +4,7 @@
         public const string nameSceneGame = "game";
         public const int portionOfMeds = 3;
         public const int totalAmountMeds = 100;
-        public const int lives = 100;
+        public const int lives = 2;
         public const string stateOfSound = "State of sound";
     }
 }

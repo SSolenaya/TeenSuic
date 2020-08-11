@@ -5,7 +5,6 @@ using Seka;
 
 namespace Assets.Scripts {
     public class TeenController: Singleton<TeenController> {
-
         private int maxHP = GP.lives; // максимальный уровень жизни - конец игры
         private int minHP = 0; // минимальный уровень жизни - конец игры
         public int valueFromMeds; // текущее количество набранных из таблеток очков
@@ -27,9 +26,14 @@ namespace Assets.Scripts {
             MedsController.OnMCmedAction += EatMeds;
         }
 
+        public void OnDisable() {
+            MedsController.OnMCmedAction -= EatMeds;
+        }
+
         public void EatMeds (Meds someMed) { // расчет текущего количества очков и их отображение
             valueFromMeds += someMed.GetValueOfMed();
             hp = Mathf.Clamp(maxHP / 2 + valueFromMeds, 0, 100);
+            Debug.Log(gameObject.name);
             textHP.text = "HP:" + hp;
             BoyFace(hp);
             fA = (float)valueFromMeds / maxHP;

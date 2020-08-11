@@ -25,6 +25,11 @@ namespace Assets.Scripts {
             MedsController.OnMCEndGame += EndGame;
         }
 
+        void OnDisable() {
+            TeenController.OnEndGame -= EndGame;
+            MedsController.OnMCEndGame -= EndGame;
+        }
+
         public void Start() {
             SoundController.OnSwitchSound += ChangeMuteBtnImgGame;
             
@@ -62,9 +67,10 @@ namespace Assets.Scripts {
         }
 
         private void StopCoro(Coroutine corou) {
-            if (corou == null) return;
-            StopCoroutine(corou);
-            corou = null;
+            if (corou != null) {
+                StopCoroutine(corou);
+                corou = null;
+            }
         }
 
         private IEnumerator IETextEndGame(string textForModalInfo) {

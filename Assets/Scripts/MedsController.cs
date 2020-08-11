@@ -18,8 +18,8 @@ namespace Assets.Scripts {
     public class MedsController: MonoBehaviour {
 
         public Meds prefabMeds; // ссылка на префаб таблетки
-        public Text counterText;
-        public List<Meds> currentMeds = new List<Meds>();
+        public Text counterText;    //  текст счетчика упавших таблеток
+        public List<Meds> currentMeds = new List<Meds>();   
         public RectTransform parentRectTransform; // ссылка на родителя таблетки
         private int quantityMeds = GP.totalAmountMeds; // количество таблеток
         public int portionOfMeds = GP.portionOfMeds; // порция таблеток, выходящая на экран
@@ -51,6 +51,12 @@ namespace Assets.Scripts {
         void Awake () {
             SetValueForType();
             numMeds = quantityMeds;
+            PoolManager.Init(parentRectTransform);
+            TeenController.OnEndGame += EndGameFromTeenController;
+        }
+
+        void OnDisable() {
+            TeenController.OnEndGame -= EndGameFromTeenController;
         }
 
         void Start () {
@@ -115,9 +121,9 @@ namespace Assets.Scripts {
         public void StopGeneration () {
             if(coroGenerationMeds != null) {
                 StopCoroutine(coroGenerationMeds);
-                DeleteCurrentMeds();
-                parentRectTransform.gameObject.SetActive(false);
             }
+            DeleteCurrentMeds();
+            parentRectTransform.gameObject.SetActive(false);
             coroGenerationMeds = null;
         }
 
@@ -151,18 +157,14 @@ namespace Assets.Scripts {
                     if(currentMeds.Count >= GP.totalAmountMeds) {
                         continue;
                     }
-                    var med = Instantiate(prefabMeds);  // создание копий префаба таблетки на поле
+                    //var med = Instantiate(prefabMeds);  // создание копий префаба таблетки на поле
+                    var med = PoolManager.GetMedFromPull(prefabMeds);
                     med.parentRT = parentRectTransform;
                     med.medsController = this;
                     CountMeds();
                     Get_random_TypeColor(med);
-                    med.Setup(GetColorByTypeColors(med.colorOfMed));
                     med.value = GetValueByTypeColors(med.colorOfMed);
-                    med.transform.SetParent(parentRectTransform); // назначение родителя для созданных экземпляров
-                    med.transform.localScale = new Vector3(1, 1, 1);  // назначение локального масштаба
-                    med.transform.localPosition = Vector3.zero;    // назначение локальных координат - относительно от родителя
-                    med.transform.localEulerAngles = new Vector3(0, 0, Random.Range(0, 91));
-
+                    med.Setup(GetColorByTypeColors(med.colorOfMed));
                     med.transform.localPosition = CoordOfMed(i, temp, parentRectTransform); // случайно генерировать экземпляры таблетки по всему полю
 
                     currentMeds.Add(med); // запись таблетки в список
@@ -186,9 +188,13 @@ namespace Assets.Scripts {
         public void CheckEndGame () {
 
             if(currentQuantMeds >= GP.totalAmountMeds) {
-                OnMCEndGame?.Invoke("Game Over");
                 StopGeneration();
+                OnMCEndGame?.Invoke("Game Over");
             }
+        }
+
+        public void EndGameFromTeenController(string msg) {
+            StopGeneration();
         }
 
         public void ActionFromMed(Meds med) {

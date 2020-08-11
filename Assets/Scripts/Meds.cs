@@ -29,6 +29,7 @@ public class Meds: MonoBehaviour, IPointerDownHandler {
            || (transform.localPosition.x > parentRT.rect.width * (0.5f))
            || (transform.localPosition.x < parentRT.rect.width * (-0.5f))) {
             Destroy(gameObject); // удаление объекта при выходе за рамки экрана
+            
         }
         transform.localEulerAngles += new Vector3(0, 0, Time.deltaTime * speedRotation);
     }
@@ -40,7 +41,8 @@ public class Meds: MonoBehaviour, IPointerDownHandler {
     public void EventOnClick () {
         medsController.ActionFromMed(this);
         SoundController.Inst.PlaySoundForClick();;
-        Destroy(gameObject); // удаление текущего объекта по клику
+        //Destroy(gameObject); // удаление текущего объекта по клику
+        PoolManager.PutMedToPool(this); //  перемещение в пул
     }
 
     public int GetValueOfMed () {
@@ -65,7 +67,11 @@ public class Meds: MonoBehaviour, IPointerDownHandler {
                 img.sprite = pillOne;
                 break;
         }
-    }
+        //gameObject.transform.SetParent(parentRT); // назначение родителя для созданных экземпляров
+        gameObject.transform.localScale = new Vector3(1, 1, 1);  // назначение локального масштаба
+        gameObject.transform.localPosition = Vector3.zero;    // назначение локальных координат - относительно от родителя
+        gameObject.transform.localEulerAngles = new Vector3(0, 0, Random.Range(0, 91));
+     }
 
    
 }
