@@ -2,25 +2,32 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Seka;
-using TMPro.EditorUtilities;
 
 namespace Assets.Scripts {
 
-    public class MainLogic : Singleton<MainLogic> {
-        public Button continueBtn;
-        public GameObject endGameModalInfo;
-        public Text endGameText;
-        public Button mainMenuBtn;
-        public Button pauseBtn;
-        public GameObject pauseModalInfo;
-        public Button soundBtn;
-        public Sprite soundOff;
-        public Sprite soundOn;
+    public class MainLogic : MonoBehaviour {
+        [SerializeField]
+        private Button _continueBtn;
+        [SerializeField]
+        private GameObject _endGameModalInfo;
+        [SerializeField]
+        private Text _endGameText;
+        [SerializeField]
+        private Button _mainMenuBtn;
+        [SerializeField]
+        private Button _pauseBtn;
+        [SerializeField]
+        private GameObject _pauseModalInfo;
+        [SerializeField]
+        private Button _soundBtn;
+        [SerializeField]
+        private Sprite _soundOffSprite;
+        [SerializeField]
+        private Sprite _soundOnSprite;
         private Coroutine _coro;
 
         private void Awake() {
-            endGameModalInfo.SetActive(false);
+            _endGameModalInfo.SetActive(false);
             TeenController.OnEndGame += EndGame;
             MedsController.OnMCEndGame += EndGame;
         }
@@ -33,32 +40,32 @@ namespace Assets.Scripts {
         public void Start() {
             SoundController.OnSwitchSound += ChangeMuteBtnImgGame;
             
-            soundBtn.onClick.RemoveAllListeners();
-            soundBtn.onClick.AddListener(() => // что происходит при нажатии кнопки Sound
+            _soundBtn.onClick.RemoveAllListeners();
+            _soundBtn.onClick.AddListener(() => // что происходит при нажатии кнопки Sound
             {
                 SoundController.Inst.SwitchSound();
             });
-            pauseBtn.onClick.RemoveAllListeners();
-            pauseBtn.onClick.AddListener(() => // что происходит при нажатии кнопки Sound
+            _pauseBtn.onClick.RemoveAllListeners();
+            _pauseBtn.onClick.AddListener(() => // что происходит при нажатии кнопки Sound
             {
                 Time.timeScale = 0;
-                pauseModalInfo.SetActive(true);
+                _pauseModalInfo.SetActive(true);
             });
-            continueBtn.onClick.RemoveAllListeners();
-            continueBtn.onClick.AddListener(() => // что происходит при нажатии кнопки Sound
+            _continueBtn.onClick.RemoveAllListeners();
+            _continueBtn.onClick.AddListener(() => // что происходит при нажатии кнопки Sound
             {
                 Time.timeScale = 1f;
-                pauseModalInfo.SetActive(false);
+                _pauseModalInfo.SetActive(false);
             });
-            mainMenuBtn.onClick.RemoveAllListeners();
-            mainMenuBtn.onClick.AddListener(() => // что происходит при нажатии кнопки Sound
+            _mainMenuBtn.onClick.RemoveAllListeners();
+            _mainMenuBtn.onClick.AddListener(() => // что происходит при нажатии кнопки Sound
             {
                 SceneManager.LoadScene(GP.nameSceneMainMenu);
             });
         }
 
         public void ChangeMuteBtnImgGame(bool var) {
-            soundBtn.image.sprite = var ? soundOn : soundOff;
+            _soundBtn.image.sprite = var ? _soundOnSprite : _soundOffSprite;
         }
 
         public void TextOnEndGame(string textForModalInfo) {
@@ -74,11 +81,11 @@ namespace Assets.Scripts {
         }
 
         private IEnumerator IETextEndGame(string textForModalInfo) {
-            endGameText.text = textForModalInfo;
-            endGameModalInfo.SetActive(true);
+            _endGameText.text = textForModalInfo;
+            _endGameModalInfo.SetActive(true);
             SoundController.Inst.PlaySoundForGameOver();
             yield return new WaitForSeconds(1.5f);
-            endGameModalInfo.SetActive(false);
+            _endGameModalInfo.SetActive(false);
             SceneManager.LoadScene(GP.nameSceneMainMenu); // start screen
         }
 
