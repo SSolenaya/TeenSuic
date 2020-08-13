@@ -21,10 +21,7 @@ namespace Assets.Scripts {
         public Text counterText;    //  текст счетчика упавших таблеток
         public List<Meds> currentMeds = new List<Meds>();   
         public RectTransform parentRectTransform; // ссылка на родителя таблетки
-        private int quantityMeds = GP.totalAmountMeds; // количество таблеток
-        public int portionOfMeds = GP.portionOfMeds; // порция таблеток, выходящая на экран
         public int numMeds;// переменная для отображения обратного счетчика таблеток
-        private float timeBetweenPortions = 2f; // время между появлением порций
         public float tempTime;
         public int currentQuantMeds; // переменная для счетчика таблеток
         private int value1;
@@ -50,7 +47,7 @@ namespace Assets.Scripts {
 
         void Awake () {
             SetValueForType();
-            numMeds = quantityMeds;
+            numMeds = GP.totalAmountMeds;
             PoolManager.Init(parentRectTransform);
             TeenController.OnEndGame += EndGameFromTeenController;
         }
@@ -60,7 +57,7 @@ namespace Assets.Scripts {
         }
 
         void Start () {
-            counterText.text = numMeds + "/" + quantityMeds;
+            counterText.text = numMeds + "/" + GP.totalAmountMeds;
             StartGenerationFromController();
         }
 
@@ -145,14 +142,14 @@ namespace Assets.Scripts {
 
         public void CountMeds () {
             currentQuantMeds++; // счетчик вышедших на сцену таблеток
-            numMeds = quantityMeds - currentQuantMeds;
-            counterText.text = numMeds + "/" + quantityMeds;
+            numMeds = GP.totalAmountMeds - currentQuantMeds;
+            counterText.text = numMeds + "/" + GP.totalAmountMeds;
         }
 
         public IEnumerator IEnumGenerationMeds () {// корутин для запуска порций таблеток, чтобы между ними была пауза (появление по очереди)
             while(true) {
                 CheckEndGame();
-                var temp = Random.Range(1, portionOfMeds);
+                var temp = Random.Range(1, GP.portionOfMeds);
                 for(int i = 1; i <= temp; i++) {
                     if(currentMeds.Count >= GP.totalAmountMeds) {
                         continue;
@@ -169,7 +166,7 @@ namespace Assets.Scripts {
 
                     currentMeds.Add(med); // запись таблетки в список
                 }
-                tempTime = Random.Range(1, timeBetweenPortions);
+                tempTime = Random.Range(1, GP.timeBetweenPortions);
                 yield return new WaitForSeconds(tempTime);
             }
         }
