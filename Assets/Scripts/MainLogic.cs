@@ -38,6 +38,7 @@ namespace Assets.Scripts {
         }
 
         public void Start() {
+            ChangeMuteBtnImgGame(SoundController.Inst.soundState);
             SoundController.OnSwitchSound += ChangeMuteBtnImgGame;
             
             _soundBtn.onClick.RemoveAllListeners();
@@ -46,21 +47,21 @@ namespace Assets.Scripts {
                 SoundController.Inst.SwitchSound();
             });
             _pauseBtn.onClick.RemoveAllListeners();
-            _pauseBtn.onClick.AddListener(() => // что происходит при нажатии кнопки Sound
+            _pauseBtn.onClick.AddListener(() => // что происходит при нажатии кнопки pause
             {
                 Time.timeScale = 0;
                 _pauseModalInfo.SetActive(true);
             });
             _continueBtn.onClick.RemoveAllListeners();
-            _continueBtn.onClick.AddListener(() => // что происходит при нажатии кнопки Sound
+            _continueBtn.onClick.AddListener(() => // что происходит при нажатии кнопки continue
             {
                 Time.timeScale = 1f;
                 _pauseModalInfo.SetActive(false);
             });
             _mainMenuBtn.onClick.RemoveAllListeners();
-            _mainMenuBtn.onClick.AddListener(() => // что происходит при нажатии кнопки Sound
+            _mainMenuBtn.onClick.AddListener(() => // что происходит при нажатии кнопки mainMenu
             {
-                SceneManager.LoadScene(GP.nameSceneMainMenu);
+                SceneManager.LoadScene(SceneNames.mainSceneName);
             });
         }
 
@@ -86,7 +87,7 @@ namespace Assets.Scripts {
             SoundController.Inst.PlaySoundForGameOver();
             yield return new WaitForSeconds(1.5f);
             _endGameModalInfo.SetActive(false);
-            SceneManager.LoadScene(GP.nameSceneMainMenu); // start screen
+            SceneManager.LoadScene(SceneNames.mainSceneName); // start screen
         }
 
         public void EndGame(string messageOnGameEnd) {

@@ -11,13 +11,14 @@ namespace Assets.Scripts {
         public Sprite soundOff;
 
         public void Start () {
+            ChangeMuteBtnImg(SoundController.Inst.soundState);
             SoundController.OnSwitchSound += ChangeMuteBtnImg;
 
             newGameButton.onClick.RemoveAllListeners();
             newGameButton.onClick.AddListener(() =>    // что происходит при нажатии кнопки Новая игра 
             {
                 Time.timeScale = 1f;
-                SceneManager.LoadScene(GP.nameSceneGame);
+                SceneManager.LoadScene(SceneNames.gameSceneName);
             });
 
             btnSound.onClick.RemoveAllListeners();
