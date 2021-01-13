@@ -6,24 +6,15 @@ using UnityEngine.UI;
 namespace Assets.Scripts {
 
     public class MainLogic : MonoBehaviour {
-        [SerializeField]
-        private Button _continueBtn;
-        [SerializeField]
-        private GameObject _endGameModalInfo;
-        [SerializeField]
-        private Text _endGameText;
-        [SerializeField]
-        private Button _mainMenuBtn;
-        [SerializeField]
-        private Button _pauseBtn;
-        [SerializeField]
-        private GameObject _pauseModalInfo;
-        [SerializeField]
-        private Button _soundBtn;
-        [SerializeField]
-        private Sprite _soundOffSprite;
-        [SerializeField]
-        private Sprite _soundOnSprite;
+        [SerializeField] private Button _continueBtn;
+        [SerializeField] private GameObject _endGameModalInfo;
+        [SerializeField] private Text _endGameText;
+        [SerializeField] private Button _mainMenuBtn;
+        [SerializeField] private Button _pauseBtn;
+        [SerializeField] private GameObject _pauseModalInfo;
+        [SerializeField] private Button _soundBtn;
+        [SerializeField] private Sprite _soundOffSprite;
+        [SerializeField] private Sprite _soundOnSprite;
         private Coroutine _coro;
 
         private void Awake() {

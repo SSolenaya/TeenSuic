@@ -21,7 +21,7 @@ namespace Assets.Scripts {
         public Text counterText;    //  текст счетчика упавших таблеток
         public List<Meds> currentMeds = new List<Meds>();   
         public RectTransform parentRectTransform; // ссылка на родителя таблетки
-        public int numMeds;// переменная для отображения обратного счетчика таблеток
+        public int medsLeft;// переменная для отображения обратного счетчика таблеток
         public float tempTime;
         public int currentQuantMeds; // переменная для счетчика таблеток
         private int value1;
@@ -47,7 +47,7 @@ namespace Assets.Scripts {
 
         void Awake () {
             SetValueForType();
-            numMeds = GP.totalAmountMeds;
+            medsLeft = GP.totalAmountMeds;
             PoolManager.Init(parentRectTransform);
             TeenController.OnEndGame += EndGameFromTeenController;
         }
@@ -57,7 +57,7 @@ namespace Assets.Scripts {
         }
 
         void Start () {
-            counterText.text = numMeds + "/" + GP.totalAmountMeds;
+            counterText.text = medsLeft + "/" + GP.totalAmountMeds;
             StartGenerationFromController();
         }
 
@@ -142,27 +142,26 @@ namespace Assets.Scripts {
 
         public void CountMeds () {
             currentQuantMeds++; // счетчик вышедших на сцену таблеток
-            numMeds = GP.totalAmountMeds - currentQuantMeds;
-            counterText.text = numMeds + "/" + GP.totalAmountMeds;
+            medsLeft = GP.totalAmountMeds - currentQuantMeds;
+            counterText.text = medsLeft + "/" + GP.totalAmountMeds;
         }
 
         public IEnumerator IEnumGenerationMeds () {// корутин для запуска порций таблеток, чтобы между ними была пауза (появление по очереди)
             while(true) {
                 CheckEndGame();
-                var temp = Random.Range(1, GP.portionOfMeds);
-                for(int i = 1; i <= temp; i++) {
+                var currentPortionSize = Random.Range(1, GP.portionOfMeds);
+                for(int i = 1; i <= currentPortionSize; i++) {
                     if(currentMeds.Count >= GP.totalAmountMeds) {
                         continue;
                     }
-                    //var med = Instantiate(prefabMeds);  // создание копий префаба таблетки на поле
-                    var med = PoolManager.GetMedFromPull(prefabMeds);
+                    var med = PoolManager.GetMedFromPull(prefabMeds); // создание копий префаба таблетки на поле
                     med.parentRT = parentRectTransform;
                     med.medsController = this;
                     CountMeds();
                     Get_random_TypeColor(med);
                     med.value = GetValueByTypeColors(med.colorOfMed);
                     med.Setup(GetColorByTypeColors(med.colorOfMed));
-                    med.transform.localPosition = CoordOfMed(i, temp, parentRectTransform); // случайно генерировать экземпляры таблетки по всему полю
+                    med.transform.localPosition = CoordOfMed(i, currentPortionSize, parentRectTransform); // случайно генерировать экземпляры таблетки по всему полю
 
                     currentMeds.Add(med); // запись таблетки в список
                 }

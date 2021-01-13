@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Assets.Scripts;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -6,11 +7,8 @@ using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 public class Meds: MonoBehaviour, IPointerDownHandler {
-    private float speed = 270f;
+    private float _speed = GP.medSpeed;
     public Image img;
-    public Sprite pillOne;
-    public Sprite pillTwo;
-    public Sprite pillThree;
     public int value;
     public RectTransform parentRT;
     private int delta_HP = 3;
@@ -23,7 +21,7 @@ public class Meds: MonoBehaviour, IPointerDownHandler {
     }
     
     public void Update () {
-        transform.localPosition += Vector3.down * speed * Time.deltaTime; // при каждом кадре уменьшать координату "y" таблетки
+        transform.localPosition += Vector3.down * _speed * Time.deltaTime; // при каждом кадре уменьшать координату "y" таблетки
 
         if((transform.localPosition.y < parentRT.rect.height * (-0.5f))
            || (transform.localPosition.x > parentRT.rect.width * (0.5f))
@@ -52,22 +50,9 @@ public class Meds: MonoBehaviour, IPointerDownHandler {
 
     public void Setup (Color col) {
         img.color = col;
-        var temp = Random.Range(1, 4);
-        switch(temp) {
-            case 1:
-                img.sprite = pillOne;
-                break;
-            case 2:
-                img.sprite = pillTwo;
-                break;
-            case 3:
-                img.sprite = pillThree;
-                break;
-            default:
-                img.sprite = pillOne;
-                break;
-        }
-        //gameObject.transform.SetParent(parentRT); // назначение родителя для созданных экземпляров
+        var spriteNum = Random.Range(1, 4);
+        Sprite s = Resources.Load<Sprite>("pill" + spriteNum);
+        img.sprite = s;
         gameObject.transform.localScale = new Vector3(1, 1, 1);  // назначение локального масштаба
         gameObject.transform.localPosition = Vector3.zero;    // назначение локальных координат - относительно от родителя
         gameObject.transform.localEulerAngles = new Vector3(0, 0, Random.Range(0, 91));

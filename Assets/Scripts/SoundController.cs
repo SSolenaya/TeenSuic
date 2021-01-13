@@ -8,10 +8,10 @@ namespace Assets.Scripts {
         public AudioSource effectsAudioSource;
 
         public bool soundState = true;
-        
-        public AudioClip backgroundClip;
-        public AudioClip clickOnMedClip;
-        public AudioClip gameOverClip;
+
+        [SerializeField] private AudioClip _backgroundClip;
+        [SerializeField] private AudioClip _clickOnMedClip;
+        [SerializeField] private AudioClip _gameOverClip;
 
         public delegate void SoundSwitch(bool b); // делегат
 
@@ -19,7 +19,7 @@ namespace Assets.Scripts {
 
        public void Start () {
            Debug.Log(Inst.soundState);
-            backgroundMusic.clip = backgroundClip;
+            backgroundMusic.clip = _backgroundClip;
             backgroundMusic.Play();
             backgroundMusic.loop = true;
             soundState = PlayerPrefs.GetInt(GP.stateOfSound, 1) == 1;
@@ -29,11 +29,11 @@ namespace Assets.Scripts {
        }
 
         public void PlaySoundForClick () {
-            effectsAudioSource.PlayOneShot(clickOnMedClip);
+            effectsAudioSource.PlayOneShot(_clickOnMedClip);
         }
 
         public void PlaySoundForGameOver () {
-            effectsAudioSource.PlayOneShot(gameOverClip, 0.5f);
+            effectsAudioSource.PlayOneShot(_gameOverClip, 0.5f);
         }
 
         public void SwitchSound () {

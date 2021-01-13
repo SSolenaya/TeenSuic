@@ -11,5 +11,7 @@
         public const float timeBetweenPortions = 2f; //  время между появлением порций
         public const int lives = 100;           //  количество жизней
         public const string stateOfSound = "State of sound";
+
+        public const float medSpeed = 270f; //  скорость падения таблеток
     }
 }
