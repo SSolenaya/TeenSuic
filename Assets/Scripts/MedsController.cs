@@ -17,24 +17,23 @@ namespace Assets.Scripts {
 
     public class MedsController: MonoBehaviour {
 
-        public Meds prefabMeds; // ссылка на префаб таблетки
-        public Text counterText;    //  текст счетчика упавших таблеток
-        public List<Meds> currentMeds = new List<Meds>();   
-        public RectTransform parentRectTransform; // ссылка на родителя таблетки
-        public int medsLeft;// переменная для отображения обратного счетчика таблеток
-        public float tempTime;
-        public int currentQuantMeds; // переменная для счетчика таблеток
-        private int value1;
-        private int value2;
-        private int value3;
-        private int value4;
-        private int value5;
-        private Color color1;
-        private Color color2;
-        private Color color3;
-        private Color color4;
-        private Color color5;
-        private Coroutine coroGenerationMeds;
+        [SerializeField] private Meds _prefabMeds; // ссылка на префаб таблетки
+        [SerializeField] private Text _counterTxt;    //  текст счетчика упавших таблеток
+        private List<Meds> _currentMedsList = new List<Meds>();   
+        [SerializeField] private RectTransform _medParentRT; // ссылка на родителя таблетки
+        private int _medsLeft;// переменная для отображения обратного счетчика таблеток
+        private int _currentQuantMeds; // переменная для счетчика таблеток
+        private int _value1;
+        private int _value2;
+        private int _value3;
+        private int _value4;
+        private int _value5;
+        private Color _color1;
+        private Color _color2;
+        private Color _color3;
+        private Color _color4;
+        private Color _color5;
+        private Coroutine _coroGenerationMeds;
 
 
         public delegate void MCEndGame (string msg); // делегат
@@ -47,8 +46,8 @@ namespace Assets.Scripts {
 
         void Awake () {
             SetValueForType();
-            medsLeft = GP.totalAmountMeds;
-            PoolManager.Init(parentRectTransform);
+            _medsLeft = GP.totalAmountMeds;
+            PoolManager.Init(_medParentRT);
             TeenController.OnEndGame += EndGameFromTeenController;
         }
 
@@ -57,26 +56,26 @@ namespace Assets.Scripts {
         }
 
         void Start () {
-            counterText.text = medsLeft + "/" + GP.totalAmountMeds;
+            _counterTxt.text = _medsLeft + "/" + GP.totalAmountMeds;
             StartGenerationFromController();
         }
 
         public void SetValueForType () {
 
-            value1 = Random.value < 0.5 ? -1 : 1; // присвоение случайного значения из 2, для реализации "хорошая/плохая таблетка"
-            value2 = Random.value < 0.5 ? -1 : 1;
-            value3 = Random.value < 0.5 ? -1 : 1;
-            value4 = Random.value < 0.5 ? -1 : 1;
-            value5 = Random.value < 0.5 ? -1 : 1;
+            _value1 = Random.value < 0.5 ? -1 : 1; // присвоение случайного значения из 2, для реализации "хорошая/плохая таблетка"
+            _value2 = Random.value < 0.5 ? -1 : 1;
+            _value3 = Random.value < 0.5 ? -1 : 1;
+            _value4 = Random.value < 0.5 ? -1 : 1;
+            _value5 = Random.value < 0.5 ? -1 : 1;
 
-            color1 = Random.ColorHSV(0f, 1f, 0.5f, 1f, 0.5f, 1f);
-            color2 = Random.ColorHSV(0f, 1f, 0.5f, 1f, 0.5f, 1f);
-            color3 = Random.ColorHSV(0f, 1f, 0.5f, 1f, 0.5f, 1f);
-            color4 = Random.ColorHSV(0f, 1f, 0.5f, 1f, 0.5f, 1f);
-            color5 = Random.ColorHSV(0f, 1f, 0.5f, 1f, 0.5f, 1f);
+            _color1 = Random.ColorHSV(0f, 1f, 0.5f, 1f, 0.5f, 1f);
+            _color2 = Random.ColorHSV(0f, 1f, 0.5f, 1f, 0.5f, 1f);
+            _color3 = Random.ColorHSV(0f, 1f, 0.5f, 1f, 0.5f, 1f);
+            _color4 = Random.ColorHSV(0f, 1f, 0.5f, 1f, 0.5f, 1f);
+            _color5 = Random.ColorHSV(0f, 1f, 0.5f, 1f, 0.5f, 1f);
         }
 
-        public TypeColors Get_random_TypeColor (Meds m) {
+        public TypeColors GetRandomTypeColor (Meds m) {
             m.colorOfMed = (TypeColors)Random.Range(1, 6);
             return m.colorOfMed;
         }
@@ -84,66 +83,66 @@ namespace Assets.Scripts {
         public Color GetColorByTypeColors (TypeColors tc) {
             switch(tc) {
                 case TypeColors.c1:
-                    return color1;
+                    return _color1;
                 case TypeColors.c2:
-                    return color2;
+                    return _color2;
                 case TypeColors.c3:
-                    return color3;
+                    return _color3;
                 case TypeColors.c4:
-                    return color4;
+                    return _color4;
                 case TypeColors.c5:
-                    return color5;
+                    return _color5;
                 default:
-                    return color1;
+                    return _color1;
             }
         }
 
         public int GetValueByTypeColors (TypeColors tc) {
             switch(tc) {
                 case TypeColors.c1:
-                    return value1;
+                    return _value1;
                 case TypeColors.c2:
-                    return value2;
+                    return _value2;
                 case TypeColors.c3:
-                    return value3;
+                    return _value3;
                 case TypeColors.c4:
-                    return value4;
+                    return _value4;
                 case TypeColors.c5:
-                    return value5;
+                    return _value5;
                 default:
-                    return value1;
+                    return _value1;
             }
         }
 
         public void StopGeneration () {
-            if(coroGenerationMeds != null) {
-                StopCoroutine(coroGenerationMeds);
+            if(_coroGenerationMeds != null) {
+                StopCoroutine(_coroGenerationMeds);
             }
             DeleteCurrentMeds();
-            parentRectTransform.gameObject.SetActive(false);
-            coroGenerationMeds = null;
+            _medParentRT.gameObject.SetActive(false);
+            _coroGenerationMeds = null;
         }
 
         public void DeleteCurrentMeds () {// функция для удаления текущих таблеток при начале новой игры
-            foreach(var m in currentMeds) {// перебираем все элементы списка
+            foreach(var m in _currentMedsList) {// перебираем все элементы списка
                 if(m != null) {// если они не нулевые
                     Destroy(m.gameObject); // удаляем объект
                 }
             }
-            currentMeds.Clear(); // очищаем список
+            _currentMedsList.Clear(); // очищаем список
         }
 
         public void StartGenerationFromController () {    /* начало генерации таблеток: запуск корутина, активация родительского для таблеток 
                                                       объекта (для отображения на сцене)*/
             StopGeneration();
-            parentRectTransform.gameObject.SetActive(true);
-            coroGenerationMeds = StartCoroutine(IEnumGenerationMeds());
+            _medParentRT.gameObject.SetActive(true);
+            _coroGenerationMeds = StartCoroutine(IEnumGenerationMeds());
         }
 
         public void CountMeds () {
-            currentQuantMeds++; // счетчик вышедших на сцену таблеток
-            medsLeft = GP.totalAmountMeds - currentQuantMeds;
-            counterText.text = medsLeft + "/" + GP.totalAmountMeds;
+            _currentQuantMeds++; // счетчик вышедших на сцену таблеток
+            _medsLeft = GP.totalAmountMeds - _currentQuantMeds;
+            _counterTxt.text = _medsLeft + "/" + GP.totalAmountMeds;
         }
 
         public IEnumerator IEnumGenerationMeds () {// корутин для запуска порций таблеток, чтобы между ними была пауза (появление по очереди)
@@ -151,21 +150,21 @@ namespace Assets.Scripts {
                 CheckEndGame();
                 var currentPortionSize = Random.Range(1, GP.portionOfMeds);
                 for(int i = 1; i <= currentPortionSize; i++) {
-                    if(currentMeds.Count >= GP.totalAmountMeds) {
+                    if(_currentMedsList.Count >= GP.totalAmountMeds) {
                         continue;
                     }
-                    var med = PoolManager.GetMedFromPull(prefabMeds); // создание копий префаба таблетки на поле
-                    med.parentRT = parentRectTransform;
-                    med.medsController = this;
+                    var med = PoolManager.GetMedFromPull(_prefabMeds); // создание копий префаба таблетки на поле
+                    med.SetParentForThisMed(_medParentRT);
+                    med.SetMedsController(this);
                     CountMeds();
-                    Get_random_TypeColor(med);
-                    med.value = GetValueByTypeColors(med.colorOfMed);
+                    GetRandomTypeColor(med);
+                    med.SetValueForMed(GetValueByTypeColors(med.colorOfMed));
                     med.Setup(GetColorByTypeColors(med.colorOfMed));
-                    med.transform.localPosition = CoordOfMed(i, currentPortionSize, parentRectTransform); // случайно генерировать экземпляры таблетки по всему полю
+                    med.transform.localPosition = CoordOfMed(i, currentPortionSize, _medParentRT); // случайно генерировать экземпляры таблетки по всему полю
 
-                    currentMeds.Add(med); // запись таблетки в список
+                    _currentMedsList.Add(med); // запись таблетки в список
                 }
-                tempTime = Random.Range(1, GP.timeBetweenPortions);
+                float tempTime = Random.Range(1f, GP.timeBetweenPortions);
                 yield return new WaitForSeconds(tempTime);
             }
         }
@@ -183,7 +182,7 @@ namespace Assets.Scripts {
 
         public void CheckEndGame () {
 
-            if(currentQuantMeds >= GP.totalAmountMeds) {
+            if(_currentQuantMeds >= GP.totalAmountMeds) {
                 StopGeneration();
                 OnMCEndGame?.Invoke("Game Over");
             }

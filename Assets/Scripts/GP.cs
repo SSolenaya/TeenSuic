@@ -13,5 +13,6 @@
         public const string stateOfSound = "State of sound";
 
         public const float medSpeed = 270f; //  скорость падения таблеток
+        public const int deltaHP = 3;   //  эффект одной таблетки ( изменение здоровья)
     }
 }

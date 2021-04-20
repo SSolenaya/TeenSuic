@@ -20,7 +20,7 @@ namespace Assets.Scripts {
 
         public void Start () {
             _textHP.text = "HP:" + _hp;
-            _imgLifeBar.color = new Color(0f, 0.43f, 0.07f, 0.86f);
+            //_imgLifeBar.color = new Color(0f, 0.576f, 0.576f, 1f);
             _imgLifeBar.fillAmount = 0.5f;
             MedsController.OnMCmedAction += EatMeds;
         }
